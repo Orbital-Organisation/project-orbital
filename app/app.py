@@ -1,13 +1,17 @@
 import streamlit as st
+from pygwalker.api.streamlit import StreamlitRenderer
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from sklearn.preprocessing import StandardScaler
 from scipy.spatial.distance import cdist
+from navigation import show_navigation
 
-df_all = pd.read_csv("understat_all_players_data.csv")
 
-df_all.fillna(0, inplace=True)
+@st.cache_resource
+def get_df():
+    df = pd.read_csv("../data/understat_all_players_data.csv")
+    return df
 
 
 def create_radar_chart(player_name, df):
@@ -134,67 +138,25 @@ def find_similar_players(player_name, df, metrics, top_n=5):
     return similar_players
 
 
-st.title("Player Performance Dashboard")
-
+st.set_page_config(page_title="Player Performance Dashboard", layout="wide")
 st.sidebar.header("Filter Players")
-teams = ["All Teams"] + sorted(df_all["team_title"].unique())
-selected_team = st.sidebar.selectbox("Select a team:", options=teams)
 
-if selected_team != "All Teams":
-    players = df_all[df_all["team_title"] == selected_team]["player_name"].unique()
-else:
-    players = df_all["player_name"].unique()
 
-player_name = st.sidebar.selectbox("Select a player:", players)
+def main():
+    if "df" not in st.session_state:
+        df = get_df()
+        df_subset = df.sample(100)
+        st.session_state.df = df_subset
 
-tab1, tab2, tab3 = st.tabs(["Player Stats", "Compare Players", "Similar Players"])
+    menu_items = {
+        "🏠 Home": ("pages.page1", "Home Page"),
+        ":pig: Pyg": ("pages.pyg", "Pyg"),
+        "📞 Contact": ("pages.page3", "Contact Us"),
+    }
 
-with tab1:
-    st.header(f"Performance Metrics for {player_name}")
+    # Show the navigation sidebar and load the selected page
+    show_navigation(menu_items)
 
-    player_data = df_all[df_all["player_name"] == player_name]
-    stats_to_display = [
-        "games",
-        "time",
-        "goals",
-        "xG",
-        "assists",
-        "xA",
-        "shots",
-        "key_passes",
-        "yellow_cards",
-        "red_cards",
-        "npg",
-        "npxG",
-        "xGChain",
-        "xGBuildup",
-    ]
-    player_stats = player_data[stats_to_display].T
-    player_stats.columns = ["Value"]
-    st.table(player_stats)
 
-    radar_chart = create_radar_chart(player_name, df_all)
-    if radar_chart:
-        st.plotly_chart(radar_chart)
-
-with tab2:
-    st.header("Compare Players")
-    player1 = st.selectbox("Select first player:", players, key="player1")
-    player2 = st.selectbox("Select second player:", players, key="player2")
-
-    if player1 and player2:
-        comparison_chart = create_comparison_radar_chart(player1, player2, df_all)
-        if comparison_chart:
-            st.plotly_chart(comparison_chart)
-
-with tab3:
-    st.header("Find Similar Players")
-
-    similarity_metrics = ["goals", "xG", "assists", "xA", "shots", "key_passes"]
-
-    similar_players = find_similar_players(player_name, df_all, similarity_metrics)
-
-    if similar_players is not None:
-        st.write(f"Players similar to {player_name}:")
-        for sp in similar_players:
-            st.write(f"- {sp}")
+if __name__ == "__main__":
+    main()
