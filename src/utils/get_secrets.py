@@ -8,9 +8,7 @@ def load_env_file():
     """
     Load environment variables from the project root .env file
     """
-    project_root = Path(
-        __file__
-    ).parent.parent.parent
+    project_root = Path(__file__).parent.parent.parent
     env_file = project_root / ".env"
 
     if not env_file.exists():
@@ -18,6 +16,7 @@ def load_env_file():
 
     load_dotenv(dotenv_path=env_file)
     print(f"Environment variables loaded from: {env_file.resolve()}")
+
 
 def get_env_variable(key, default=None):
     """
@@ -29,6 +28,7 @@ def get_env_variable(key, default=None):
             f"Warning: Environment variable '{key}' not found. Using default: {default}"
         )
     return value
+
 
 try:
     load_env_file()
