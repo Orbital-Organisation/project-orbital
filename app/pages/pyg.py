@@ -4,6 +4,7 @@ import pygwalker as pyg
 
 df = st.session_state.df
 
+
 def main():
     pyg_app = StreamlitRenderer(df)
     pyg_app.explorer()

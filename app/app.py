@@ -141,8 +141,9 @@ def find_similar_players(player_name, df, metrics, top_n=5):
 st.set_page_config(page_title="Player Performance Dashboard", layout="wide")
 st.sidebar.header("Filter Players")
 
+
 def main():
-    if 'df' not in st.session_state:
+    if "df" not in st.session_state:
         df = get_df()
         df_subset = df.sample(100)
         st.session_state.df = df_subset
@@ -155,7 +156,7 @@ def main():
 
     # Show the navigation sidebar and load the selected page
     show_navigation(menu_items)
-   
+
 
 if __name__ == "__main__":
     main()

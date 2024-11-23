@@ -17,7 +17,7 @@ def show_navigation(menu_items):
     # Import and execute the main function of the selected page
     page_module, page_title = menu_items[selected_page]
     st.title(page_title)
-    
+
     # Dynamically load the module
     module = __import__(page_module, fromlist=["main"])
     module.main()
