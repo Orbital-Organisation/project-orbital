@@ -5,8 +5,8 @@ __pycache__/
 # Virtual environment
 .venv/
 venv/
-env/  # This line ensures /env is ignored
-.env  # This line ensures .env files are ignored
+env/
+.env
 
 # Logs
 *.log
